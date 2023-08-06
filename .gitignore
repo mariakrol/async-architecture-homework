@@ -1,3 +1,4 @@
 /.idea/*
 /a-tes-system/ATesSystem/.vs/*
-/a-tes-system/ATesSystem/ATesSystem/obj/*
+/a-tes-system/ATesSystem/*/obj/*
+/a-tes-system/ATesSystem/*/bin/*
