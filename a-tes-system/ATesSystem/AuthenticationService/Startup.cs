@@ -1,8 +1,7 @@
 ﻿using AuthenticationService.Data.Configuration;
 using AuthenticationService.Data.Storage;
-using AuthenticationService.Utilities;
+using AuthenticationService.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace AuthenticationService;
@@ -30,6 +29,9 @@ public class Startup
 
         services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
+        services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IAuthenticationService, Services.AuthenticationService>();
+
         services.AddSwaggerGen(config =>
         {
             config.SwaggerDoc("v1", new OpenApiInfo
@@ -52,34 +54,14 @@ public class Startup
 
         app.UseSwaggerUI();
         var serviceScope = app.ApplicationServices.CreateScope();
-        var userDb = serviceScope.ServiceProvider.GetRequiredService<UserDb>();
-        var appSettings = serviceScope.ServiceProvider.GetService<IOptions<AppSettings>>().Value;
+        var userService = serviceScope.ServiceProvider.GetRequiredService<IUserService>();
 
-        AddTestData(userDb, appSettings);
+        AddTestData(userService);
     }
 
-    private static void AddTestData(UserDb db, AppSettings appSettings)
+    private static void AddTestData(IUserService userService)
     {
-        var secret = appSettings.PasswordEncryptionSecret;
-
-        var user1 = new User
-        {
-            Id = Guid.NewGuid(),
-            Name = "User 1",
-            EncryptedPassword = Encryptor.Encrypt("Password", secret),
-            Roles = new[] { Role.Worker }
-        };
-
-        var user2 = new User
-        {
-            Id = Guid.NewGuid(),
-            Name = "User 2",
-            EncryptedPassword = Encryptor.Encrypt("Password", secret),
-            Roles = new[] { Role.Admin }
-        };
-
-        db.Add(user1);
-        db.Add(user2);
-        db.SaveChanges();
+        var user1 = userService.CreateUser(name: "User", "User", new[] { Role.Worker });
+        var user2 = userService.CreateUser(name: "Root", "Root", new[] { Role.Admin  });
     }
 }
