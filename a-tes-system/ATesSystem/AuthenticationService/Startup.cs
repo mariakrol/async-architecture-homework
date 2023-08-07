@@ -1,5 +1,6 @@
 ﻿using AuthenticationService.Data.Configuration;
 using AuthenticationService.Data.Storage;
+using AuthenticationService.Middleware;
 using AuthenticationService.Services;
 using AuthenticationService.Utilities.Jwt;
 using Microsoft.EntityFrameworkCore;
@@ -55,11 +56,12 @@ public class Startup
         app.UseHttpsRedirection();
 
         app.UseSwagger(c => { c.SerializeAsV2 = true; });
-
         app.UseSwaggerUI();
+
+        app.UseMiddleware<ErrorHandlerMiddleware>();
+
         var serviceScope = app.ApplicationServices.CreateScope();
         var userService = serviceScope.ServiceProvider.GetRequiredService<IUserService>();
-
         AddTestData(userService);
     }
 
