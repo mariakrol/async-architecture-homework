@@ -29,7 +29,9 @@ public class AuthenticationController : ControllerBase
         }
         catch (AuthenticationException ex)
         {
-            return Unauthorized(ex);
+            // Only message is sent to the caller, because System.Text.Json
+            // does not support serialization of exceptions https://github.com/dotnet/runtime/issues/43026 
+            return Unauthorized(ex.Message);
         }
     }
 }
