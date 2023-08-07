@@ -1,4 +1,5 @@
-﻿using AuthenticationService.Data.Storage;
+﻿using AuthenticationService.Data.Configuration;
+using AuthenticationService.Data.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -24,6 +25,8 @@ public class Startup
         });
 
         services.AddControllers();
+
+        services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
         services.AddSwaggerGen(config =>
         {
