@@ -25,7 +25,11 @@ public class Startup
             options.SerializerOptions.IncludeFields = true;
         });
 
-        services.AddControllers();
+        services.AddControllers().AddJsonOptions(x =>
+        {
+            x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+        });
+
 
         services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
@@ -47,10 +51,7 @@ public class Startup
         app.UseRouting();
         app.UseHttpsRedirection();
 
-        app.UseSwagger(c =>
-        {
-            c.SerializeAsV2 = true;
-        });
+        app.UseSwagger(c => { c.SerializeAsV2 = true; });
 
         app.UseSwaggerUI();
         var serviceScope = app.ApplicationServices.CreateScope();
@@ -61,7 +62,7 @@ public class Startup
 
     private static void AddTestData(IUserService userService)
     {
-        var user1 = userService.CreateUser(name: "User", "User", new[] { Role.Worker });
-        var user2 = userService.CreateUser(name: "Root", "Root", new[] { Role.Admin  });
+        var user1 = userService.CreateUser(name: "User", "User", Role.Worker);
+        var user2 = userService.CreateUser(name: "Root", "Root", Role.Admin);
     }
 }
