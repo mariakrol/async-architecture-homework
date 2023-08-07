@@ -1,6 +1,8 @@
 ﻿using AuthenticationService.Data.Configuration;
 using AuthenticationService.Data.Storage;
+using AuthenticationService.Utilities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 namespace AuthenticationService;
@@ -49,5 +51,35 @@ public class Startup
         });
 
         app.UseSwaggerUI();
+        var serviceScope = app.ApplicationServices.CreateScope();
+        var userDb = serviceScope.ServiceProvider.GetRequiredService<UserDb>();
+        var appSettings = serviceScope.ServiceProvider.GetService<IOptions<AppSettings>>().Value;
+
+        AddTestData(userDb, appSettings);
+    }
+
+    private static void AddTestData(UserDb db, AppSettings appSettings)
+    {
+        var secret = appSettings.PasswordEncryptionSecret;
+
+        var user1 = new User
+        {
+            Id = Guid.NewGuid(),
+            Name = "User 1",
+            EncryptedPassword = Encryptor.Encrypt("Password", secret),
+            Roles = new[] { Role.Worker }
+        };
+
+        var user2 = new User
+        {
+            Id = Guid.NewGuid(),
+            Name = "User 2",
+            EncryptedPassword = Encryptor.Encrypt("Password", secret),
+            Roles = new[] { Role.Admin }
+        };
+
+        db.Add(user1);
+        db.Add(user2);
+        db.SaveChanges();
     }
 }
