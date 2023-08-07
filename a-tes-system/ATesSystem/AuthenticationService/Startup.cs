@@ -1,8 +1,10 @@
 ﻿using AuthenticationService.Data.Configuration;
 using AuthenticationService.Data.Storage;
 using AuthenticationService.Services;
+using AuthenticationService.Utilities.Jwt;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System.Text.Json.Serialization;
 
 namespace AuthenticationService;
 
@@ -35,6 +37,7 @@ public class Startup
 
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthenticationService, Services.AuthenticationService>();
+        services.AddScoped<IJwtUtils, JwtUtils>();
 
         services.AddSwaggerGen(config =>
         {
