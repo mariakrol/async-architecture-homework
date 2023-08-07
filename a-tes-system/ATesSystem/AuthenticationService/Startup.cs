@@ -1,5 +1,6 @@
 ﻿using AuthenticationService.Data.Storage;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
 namespace AuthenticationService;
 
@@ -23,11 +24,27 @@ public class Startup
         });
 
         services.AddControllers();
+
+        services.AddSwaggerGen(config =>
+        {
+            config.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Authentication API",
+                Version = "v1"
+            });
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         app.UseRouting();
         app.UseHttpsRedirection();
+
+        app.UseSwagger(c =>
+        {
+            c.SerializeAsV2 = true;
+        });
+
+        app.UseSwaggerUI();
     }
 }
