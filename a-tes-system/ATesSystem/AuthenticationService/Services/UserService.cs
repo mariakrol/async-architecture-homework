@@ -20,7 +20,7 @@ internal class UserService : IUserService
         _appSettings = appSettings.Value;
     }
 
-    public async Task<User> CreateUser(string name, string password, Role[] roles)
+    public async Task<User> CreateUser(string name, string password, Role role)
     {
         var isExists = await _context.Users.AnyAsync(user => user.Name.Equals(name));
 
@@ -30,9 +30,10 @@ internal class UserService : IUserService
         }
         var secret = _appSettings.PasswordEncryptionSecret;
 
-        var user = new User(id: Guid.NewGuid(), name: name, encryptedPassword: Encryptor.Encrypt(password, secret), roles);
+        var user = new User(id: Guid.NewGuid(), name: name, encryptedPassword: Encryptor.Encrypt(password, secret), role);
         
         _context.Users.Add(user);
+        await _context.SaveChangesAsync();
 
         return user;
     }
