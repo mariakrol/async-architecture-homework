@@ -2,12 +2,12 @@
 
 public class User
 {
-    public User(Guid id, string name, string encryptedPassword, Role[] roles)
+    public User(Guid id, string name, string encryptedPassword, Role role)
     {
         Id = id;
         Name = name;
         EncryptedPassword = encryptedPassword;
-        Roles = roles;
+        Role = role;
     }
 
     public Guid Id { get; set; }
@@ -16,5 +16,5 @@ public class User
 
     public string EncryptedPassword { get; set; }
 
-    public Role[] Roles { get; set; }
+    public Role Role { get; set; }
 }
