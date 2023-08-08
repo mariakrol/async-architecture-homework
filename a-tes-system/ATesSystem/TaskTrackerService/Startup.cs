@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using TaskTrackerService.Data.Storage;
+using TaskTrackerService.Middleware;
 
 namespace TaskTrackerService;
 
@@ -49,6 +50,8 @@ public class Startup
         {
             app.UseExceptionHandler("/error");
         }
+
+        app.UseMiddleware<ErrorHandlerMiddleware>();
 
         app.UseRouting();
         app.UseHttpsRedirection();

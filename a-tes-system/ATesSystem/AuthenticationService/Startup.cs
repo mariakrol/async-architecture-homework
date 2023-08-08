@@ -61,13 +61,13 @@ public class Startup
             app.UseExceptionHandler("/error");
         }
 
+        app.UseMiddleware<ErrorHandlerMiddleware>();
+
         app.UseRouting();
         app.UseHttpsRedirection();
 
         app.UseSwagger(c => { c.SerializeAsV2 = true; });
         app.UseSwaggerUI();
-
-        app.UseMiddleware<ErrorHandlerMiddleware>();
 
         var serviceScope = app.ApplicationServices.CreateScope();
         var userService = serviceScope.ServiceProvider.GetRequiredService<IUserService>();
