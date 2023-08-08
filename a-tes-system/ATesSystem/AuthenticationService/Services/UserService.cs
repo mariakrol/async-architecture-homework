@@ -2,7 +2,7 @@
 using AuthenticationService.Data.Storage;
 using AuthenticationService.Utilities;
 using Microsoft.Extensions.Options;
-using System.Xml.Linq;
+using AuthenticationService.Data.RequestResponseModels.User;
 using Microsoft.EntityFrameworkCore;
 
 namespace AuthenticationService.Services;
@@ -18,6 +18,11 @@ internal class UserService : IUserService
     {
         _context = context;
         _appSettings = appSettings.Value;
+    }
+
+    public Task<User> CreateUser(UserCreationRequest model)
+    {
+        return CreateUser(model.UserName!, model.Password!, model.Role!.Value);
     }
 
     public async Task<User> CreateUser(string name, string password, Role role)
