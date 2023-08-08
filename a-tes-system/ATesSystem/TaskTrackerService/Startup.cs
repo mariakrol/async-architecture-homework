@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using TaskTrackerService.Data.Storage;
 using TaskTrackerService.Middleware;
+using TaskTrackerService.Services;
 
 namespace TaskTrackerService;
 
@@ -29,6 +30,8 @@ public class Startup
         {
             x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
+
+        services.AddScoped<ITaskService, TaskService>();
 
         services.AddSwaggerGen(config =>
         {
