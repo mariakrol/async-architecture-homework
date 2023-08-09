@@ -1,16 +1,17 @@
-﻿using System.Collections.Generic;
-
-namespace TaskTrackerService.Data.Storage;
+﻿namespace TaskTrackerService.Data.Storage;
 
 public class Task
 {
-    public Task(string title, string description)
+    public Task(string title, string description, Guid assignedUser, int assignmentFee, int finalizationReward)
     {
         Id = Guid.NewGuid();
         Title = title;
         Description = description;
+        AssignedUserId = assignedUser;
+        AssignmentFee = assignmentFee;
+        FinalizationReward = finalizationReward;
         CreatedDate = DateTime.Now;
-        Status = TaskStatus.New;
+        Status = TaskStatus.Assigned;
     }
 
     public Guid Id { get; }
@@ -25,13 +26,11 @@ public class Task
 
     public TaskStatus Status { get; private set; }
 
-    public int AssignmentFee { get; private set; }
+    public int AssignmentFee { get; }
 
-    public int FinalizationReward { get; private set; }
+    public int FinalizationReward { get; }
 
-    public void AssignUser(Guid userId) => AssignedUserId = userId;
+    public void ReassignUser(Guid userId) => AssignedUserId = userId;
 
-    public void AddAssignmentFee(int fee) => AssignmentFee = fee;
-
-    public void AddFinalizationReward(int reward) => FinalizationReward = reward;
+    public void ChangeStatus(TaskStatus status) => Status = status;
 }

@@ -2,6 +2,14 @@
 
 public class TaskCreationResponse
 {
+    internal TaskCreationResponse(Storage.Task task)
+    {
+        Id = task.Id;
+        AssignedUser = task.AssignedUserId;
+        AssignmentFee = task.AssignmentFee;
+        FinalizationReward = task.FinalizationReward;
+    }
+
     public Guid? Id { get; set; }
 
     public Guid? AssignedUser { get; set; }
