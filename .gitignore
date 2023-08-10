@@ -2,3 +2,5 @@
 /a-tes-system/ATesSystem/.vs/*
 /a-tes-system/ATesSystem/*/obj/*
 /a-tes-system/ATesSystem/*/bin/*
+*.pubxml
+*.user

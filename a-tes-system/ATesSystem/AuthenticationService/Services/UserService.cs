@@ -20,9 +20,11 @@ internal class UserService : IUserService
         _appSettings = appSettings.Value;
     }
 
-    public Task<User> CreateUser(UserCreationRequest model)
+    public async Task<UserCreationResponse> CreateUser(UserCreationRequest model)
     {
-        return CreateUser(model.UserName!, model.Password!, model.Role!.Value);
+        var user = await CreateUser(model.UserName!, model.Password!, model.Role!.Value);
+
+        return new UserCreationResponse(user);
     }
 
     public async Task<User> CreateUser(string name, string password, Role role)
