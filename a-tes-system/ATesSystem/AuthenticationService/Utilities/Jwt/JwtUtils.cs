@@ -36,4 +36,33 @@ public class JwtUtils : IJwtUtils
         var token = tokenHandler.CreateToken(tokenDescriptor);
         return tokenHandler.WriteToken(token);
     }
+
+    public Guid? ValidateJwtToken(string? token)
+    {
+        if (token == null)
+            return null;
+
+        var tokenHandler = new JwtSecurityTokenHandler();
+        
+        try
+        {
+            tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(_secretKey),
+                ValidateIssuer = false,
+                ValidateAudience = false, 
+                ClockSkew = TimeSpan.Zero
+            }, out SecurityToken validatedToken);
+
+            var jwtToken = (JwtSecurityToken)validatedToken;
+            var accountId = Guid.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
+
+            return accountId;
+        }
+        catch
+        {
+            return null;
+        }
+    }
 }

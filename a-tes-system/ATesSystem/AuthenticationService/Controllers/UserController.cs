@@ -1,4 +1,5 @@
-﻿using AuthenticationService.Data.RequestResponseModels.User;
+﻿using AuthenticationService.Attributes;
+using AuthenticationService.Data.RequestResponseModels.User;
 using AuthenticationService.Queue;
 using AuthenticationService.Queue.Event.User;
 using AuthenticationService.Services;
@@ -8,6 +9,7 @@ namespace AuthenticationService.Controllers;
 
 [ApiController]
 [Route("[Controller]")]
+[Authorize]
 public class UsersController : Controller
 {
     private readonly IUserService _userService;

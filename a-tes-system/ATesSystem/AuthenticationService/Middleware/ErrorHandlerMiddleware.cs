@@ -29,19 +29,16 @@ public class ErrorHandlerMiddleware
 
             switch (error)
             {
-                case AuthenticationException: 
-                    response.StatusCode = (int)HttpStatusCode.Unauthorized; 
+                case AuthenticationException:
+                    response.StatusCode = (int)HttpStatusCode.Unauthorized;
                     break;
                 case AuthenticationServiceException:
-                    // custom application error
                     response.StatusCode = (int)HttpStatusCode.BadRequest;
                     break;
                 case KeyNotFoundException:
-                    // not found error
                     response.StatusCode = (int)HttpStatusCode.NotFound;
                     break;
                 default:
-                    // unhandled error
                     _logger.LogError(error, error.Message);
                     response.StatusCode = (int)HttpStatusCode.InternalServerError;
                     break;

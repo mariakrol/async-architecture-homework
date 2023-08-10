@@ -1,6 +1,7 @@
 ﻿using AuthenticationService.Data.Configuration;
 using AuthenticationService.Data.Storage;
 using AuthenticationService.Middleware;
+using AuthenticationService.Queue;
 using AuthenticationService.Services;
 using AuthenticationService.Utilities.Jwt;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +40,7 @@ public class Startup
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthenticationService, Services.AuthenticationService>();
         services.AddScoped<IJwtUtils, JwtUtils>();
+        services.AddScoped<IMessageQueueEventProducerService,  MessageQueueEventProducerService>();
 
         services.AddSwaggerGen(config =>
         {
@@ -62,6 +64,7 @@ public class Startup
         }
 
         app.UseMiddleware<ErrorHandlerMiddleware>();
+        app.UseMiddleware<JwtMiddleware>();
 
         app.UseRouting();
         app.UseHttpsRedirection();

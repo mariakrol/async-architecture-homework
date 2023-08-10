@@ -1,7 +1,7 @@
 ﻿using AuthenticationService.Data.RequestResponseModels.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Authentication;
-
+using AuthenticationService.Attributes;
 using IAuthenticationService = AuthenticationService.Services.IAuthenticationService;
 
 namespace AuthenticationService.Controllers;
@@ -21,6 +21,7 @@ public class AuthenticationController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(AuthenticationResponse))]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [HttpPost("authenticate")]
+    [AllowAnonymous]
     public async Task<IActionResult> Authenticate(AuthenticationRequest model)
     {
         try
