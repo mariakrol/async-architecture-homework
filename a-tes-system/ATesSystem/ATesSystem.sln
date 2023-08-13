@@ -5,7 +5,9 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthenticationService", "AuthenticationService\AuthenticationService.csproj", "{58072E4F-0F9A-48FE-9D6E-A9EF19B63662}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TaskTrackerService", "TaskTrackerService\TaskTrackerService.csproj", "{9FB0102C-7323-42DB-AF7D-DC14C09582DB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaskTrackerService", "TaskTrackerService\TaskTrackerService.csproj", "{9FB0102C-7323-42DB-AF7D-DC14C09582DB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PopugKafkaClient", "PopugKafkaClient\PopugKafkaClient.csproj", "{AC5C610E-8344-41F6-A098-5947E0DE51CE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{9FB0102C-7323-42DB-AF7D-DC14C09582DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9FB0102C-7323-42DB-AF7D-DC14C09582DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9FB0102C-7323-42DB-AF7D-DC14C09582DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC5C610E-8344-41F6-A098-5947E0DE51CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC5C610E-8344-41F6-A098-5947E0DE51CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC5C610E-8344-41F6-A098-5947E0DE51CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC5C610E-8344-41F6-A098-5947E0DE51CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

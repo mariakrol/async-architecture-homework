@@ -4,3 +4,4 @@
 /a-tes-system/ATesSystem/*/bin/*
 *.pubxml
 *.user
+/a-tes-system/ATesSystem/*/.config/
