@@ -1,9 +1,9 @@
 ﻿using AuthenticationService.Attributes;
 using AuthenticationService.Data.RequestResponseModels.User;
 using AuthenticationService.Queue;
-using AuthenticationService.Queue.Event.User;
 using AuthenticationService.Services;
 using Microsoft.AspNetCore.Mvc;
+using PopugKafkaClient.Producer;
 
 namespace AuthenticationService.Controllers;
 
@@ -29,8 +29,7 @@ public class UsersController : Controller
     {
         var response = await _userService.CreateUser(model);
 
-        var userCreatedEventData = new UserCreatedEventData(response.Id, response.Name, response.Role);
-        var userCreatedEvent = new UserCreatedEvent(userCreatedEventData);
+        var userCreatedEvent = new UserCreatedEvent(response);
         await _queueEventProducer.Produce("users-stream", userCreatedEvent);
 
         return TypedResults.Created($"/users/{response.Id}", response);

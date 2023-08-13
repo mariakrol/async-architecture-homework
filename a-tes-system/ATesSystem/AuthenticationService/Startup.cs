@@ -7,6 +7,8 @@ using AuthenticationService.Utilities.Jwt;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using System.Text.Json.Serialization;
+using PopugKafkaClient.Data.Configuration;
+using PopugKafkaClient.Producer;
 
 namespace AuthenticationService;
 
@@ -37,10 +39,12 @@ public class Startup
 
         services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
+        services.Configure<PopugKafkaSettings>(Configuration.GetSection("PopugKafkaSettings"));
+
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IAuthenticationService, Services.AuthenticationService>();
         services.AddScoped<IJwtUtils, JwtUtils>();
-        services.AddScoped<IMessageQueueEventProducerService,  MessageQueueEventProducerService>();
+        services.AddScoped<IMessageQueueEventProducerService,  AuthServiceMessageProducer>();
 
         services.AddSwaggerGen(config =>
         {
