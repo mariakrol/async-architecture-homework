@@ -1,8 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using PopugKafkaClient.Data.Configuration;
 using TaskTrackerService.Data.Storage;
 using TaskTrackerService.Middleware;
+using TaskTrackerService.Queue;
 using TaskTrackerService.Services;
 
 namespace TaskTrackerService;
@@ -31,7 +33,14 @@ public class Startup
             x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
 
+        services.Configure<PopugKafkaSettings>(Configuration.GetSection("PopugKafkaSettings"));
+
         services.AddScoped<ITaskService, TaskService>();
+        services.AddScoped<IWorkerSelectionService, WorkerSelectionService>();
+        services.AddScoped<ICostCalculatorService, CostCalculatorService>();
+        services.AddScoped<IUserService, UserService>();
+
+        services.AddSingleton<UserEventConsumer>();
 
         services.AddSwaggerGen(config =>
         {

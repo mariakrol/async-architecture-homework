@@ -2,12 +2,12 @@
 
 public class TaskCreationResponse
 {
-    internal TaskCreationResponse(Storage.Task task)
+    internal TaskCreationResponse(Storage.PopugTask popugTask)
     {
-        Id = task.Id;
-        AssignedUser = task.AssignedUserId;
-        AssignmentFee = task.AssignmentFee;
-        FinalizationReward = task.FinalizationReward;
+        Id = popugTask.Id;
+        AssignedUser = popugTask.AssignedUserId;
+        AssignmentFee = popugTask.AssignmentFee;
+        FinalizationReward = popugTask.FinalizationReward;
     }
 
     public Guid? Id { get; set; }
