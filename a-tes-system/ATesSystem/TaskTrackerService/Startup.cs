@@ -2,10 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PopugKafkaClient.Data.Configuration;
+using TaskTrackerService.Data.Configuration;
 using TaskTrackerService.Data.Storage;
 using TaskTrackerService.Middleware;
 using TaskTrackerService.Queue;
 using TaskTrackerService.Services;
+using TaskTrackerService.Utilities.Jwt;
 
 namespace TaskTrackerService;
 
@@ -33,8 +35,10 @@ public class Startup
             x.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
         });
 
+        services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
         services.Configure<PopugKafkaSettings>(Configuration.GetSection("PopugKafkaSettings"));
 
+        services.AddScoped<IJwtUtils, JwtUtils>();
         services.AddScoped<ITaskService, TaskService>();
         services.AddScoped<IWorkerSelectionService, WorkerSelectionService>();
         services.AddScoped<ICostCalculatorService, CostCalculatorService>();

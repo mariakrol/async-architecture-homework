@@ -38,7 +38,6 @@ public class Startup
 
 
         services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
-
         services.Configure<PopugKafkaSettings>(Configuration.GetSection("PopugKafkaSettings"));
 
         services.AddScoped<IUserService, UserService>();

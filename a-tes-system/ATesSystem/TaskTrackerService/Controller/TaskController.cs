@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using TaskTrackerService.Attributes;
 using TaskTrackerService.Data.RequestResponseModels.Task;
 using TaskTrackerService.Services;
 
@@ -19,7 +20,8 @@ public class TaskController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TaskCreationResponse))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<IResult> CreateTodo(TaskCreationRequest model)
+    [Authorize]
+    public async Task<IResult> CreateTask(TaskCreationRequest model)
     {
         var response = await _taskService.Create(model);
 

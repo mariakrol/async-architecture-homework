@@ -1,6 +1,8 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using TaskTrackerService.Data.Configuration;
 using TaskTrackerService.Data.Storage;
+using TaskTrackerService.Utilities.Jwt;
 
 namespace TaskTrackerService.Middleware;
 
