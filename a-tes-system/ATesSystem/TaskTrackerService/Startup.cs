@@ -44,7 +44,7 @@ public class Startup
         services.AddScoped<ICostCalculatorService, CostCalculatorService>();
         services.AddScoped<IUserService, UserService>();
 
-        services.AddSingleton<UserEventConsumer>();
+        services.AddHostedService<UserEventConsumer>();
 
         services.AddSwaggerGen(config =>
         {

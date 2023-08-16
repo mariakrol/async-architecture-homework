@@ -1,20 +1,44 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Confluent.Kafka;
+using Microsoft.Extensions.Options;
 using PopugKafkaClient.Consumer;
 using PopugKafkaClient.Data.Configuration;
-using TaskTrackerService.Data.Storage;
+using PopugKafkaClient.Utilities;
+using TaskTrackerService.Services;
 
 namespace TaskTrackerService.Queue;
 
 public class UserEventConsumer : MessageQueueEventConsumer<UserCreatedEvent>
 {
-    public UserEventConsumer(TaskTrackerDb dataContext, IOptions<PopugKafkaSettings> settings)
-        : base(settings, "task-tracker-user-event-consumer", "user-created", 
-            eventData => SaveUserToDb(dataContext, eventData)) { }
+    private IDeserializer<UserCreatedEvent> _deserializer;
 
-    public static void SaveUserToDb(TaskTrackerDb dataContext, UserCreatedEvent @event)
+    public UserEventConsumer(IServiceProvider services)
+        : base(GetKafkaSettings(services), 
+            "task-tracker-user-event-consumer",
+            "group1", //ToDo: read about group naming and rename
+            "users-stream")
     {
-        var user = new User(@event.Id, @event.UserName, @event.Role);
-        dataContext.Users.Add(user);
-        dataContext.SaveChanges();
+        Services = services;
+        _deserializer = new PayloadSerializer<UserCreatedEvent>();
+    }
+
+    public IServiceProvider Services { get; }
+
+    private static IOptions<PopugKafkaSettings> GetKafkaSettings(IServiceProvider services)
+    {
+        using var scope = services.CreateScope();
+        return  scope.ServiceProvider.GetService<IOptions<PopugKafkaSettings>>()!;
+    }
+
+    protected override UserCreatedEvent Deserialize(string json)
+    {
+        return _deserializer.Deserialize(json.ToAsciiByteArray(), isNull: false, new SerializationContext());   
+    }
+
+    protected override async Task HandleMessage(UserCreatedEvent payload)
+    {
+        using var scope = Services.CreateScope();
+        var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+
+        await userService.SaveUser(payload);
     }
 }

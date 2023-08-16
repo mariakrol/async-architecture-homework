@@ -1,8 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using TaskTrackerService.Data.Storage;
 using TaskTrackerService.Queue;
-using Task = System.Threading.Tasks.Task;
 
 namespace TaskTrackerService.Services;
 
@@ -17,7 +15,9 @@ public class UserService : IUserService
 
     public async Task<Guid> SaveUser(UserCreatedEvent model)
     {
-        var user = new User(model.Id, model.UserName, model.Role);
+        Console.WriteLine($"User to be saved in Tracker: {model.Id}; {model.Name}, {model.Role}"); // ToDo: Log
+
+        var user = new User(model.Id, model.Name, model.Role);
 
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
