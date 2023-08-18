@@ -19,9 +19,13 @@ public class WorkerSelectionService : IWorkerSelectionService
     public async Task<Guid> GetUserIdToAssign(TaskCreationRequest model)
     {
         var usersCount = await _context.Users.CountAsync();
+        var index = new Random().Next(usersCount);
+        Console.WriteLine($"Users count: {usersCount}, selected: {index}"); //ToDo: log
 
-        var randomUser = _random.Next(0, usersCount);
-
-        return _context.Users.ElementAt(randomUser).Id;
+        if(index == 0) {
+            return (await _context.Users.FirstAsync()).Id;
+        }
+        
+        return _context.Users.Skip(index).First().Id;
     }
 }
