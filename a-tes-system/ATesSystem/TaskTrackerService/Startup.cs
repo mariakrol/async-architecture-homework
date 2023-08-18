@@ -50,7 +50,7 @@ public class Startup
         {
             config.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "Authentication API",
+                Title = "Task Tracker API",
                 Version = "v1"
             });
         });
