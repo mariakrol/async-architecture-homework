@@ -1,8 +1,6 @@
-﻿using TaskTrackerService.Data.RequestResponseModels.Task;
-
-namespace TaskTrackerService.Services;
+﻿namespace TaskTrackerService.Services;
 
 public interface IWorkerSelectionService
 {
-    Task<Guid> GetUserIdToAssign(TaskCreationRequest model);
+    Task<Guid> GetUserIdToAssign(WorkerAssignRequest request);
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using TaskTrackerService.Attributes;
 using TaskTrackerService.Data.RequestResponseModels.Task;
+using TaskTrackerService.Data.Storage;
 using TaskTrackerService.Services;
 
 namespace TaskTrackerService.Controller;
@@ -10,13 +11,33 @@ namespace TaskTrackerService.Controller;
 public class TaskController : ControllerBase
 {
     private readonly ITaskService _taskService;
+    private readonly HttpContext _httpContext;
 
-    public TaskController(ITaskService taskService)
+    public TaskController(ITaskService taskService, HttpContext httpContext)
     {
         _taskService = taskService;
+        _httpContext = httpContext;
     }
 
-    [HttpPost]
+    [HttpGet("all")]
+    [Produces("application/json")]
+    //[AuthorizeAsAdmin]
+    public async Task<PopugTask[]> GetTasks()
+    {
+        return await _taskService.GetTasks();
+    }
+
+    [HttpGet("assigned")]
+    [Produces("application/json")]
+    [Authorize]
+    public async Task<PopugTask[]> GetAssignedTasks()
+    {
+        var account = (User)_httpContext.Items["User"]!; // ToDo: create 'session helper'
+
+        return await _taskService.GetTasks(account);
+    }
+
+    [HttpPost("create")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TaskCreationResponse))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -27,4 +48,24 @@ public class TaskController : ControllerBase
 
         return TypedResults.Created($"/tasks/{response.Id}", response);
     }
+
+    [HttpPost("shuffle")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    //[AuthorizeAsAdmin]
+    public async Task ShuffleTasks()
+    {
+        await _taskService.ShuffleTasks();
+    }
+
+    [HttpPost("finish")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Authorize]
+    public async Task FinishTask(TaskFinalizationRequest request)
+    {
+        await _taskService.ShuffleTasks();
+    } 
 }

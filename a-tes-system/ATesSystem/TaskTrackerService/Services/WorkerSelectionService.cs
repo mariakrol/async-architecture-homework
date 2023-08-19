@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TaskTrackerService.Data.RequestResponseModels.Task;
 using TaskTrackerService.Data.Storage;
 
 namespace TaskTrackerService.Services;
@@ -16,10 +15,15 @@ public class WorkerSelectionService : IWorkerSelectionService
         _random = new Random();
     }
 
-    public async Task<Guid> GetUserIdToAssign(TaskCreationRequest model)
+    public async Task<Guid> GetUserIdToAssign(WorkerAssignRequest request)
     {
-        var usersCount = await _context.Users.CountAsync();
-        var index = new Random().Next(usersCount);
+        var availableUsers = from user in _context.Users
+                                where user.Id != request.PreviousAssignee
+                                select user;
+
+        var usersCount = await availableUsers.CountAsync();
+        var index = _random.Next(usersCount);
+        
         Console.WriteLine($"Users count: {usersCount}, selected: {index}"); //ToDo: log
 
         if(index == 0) {
