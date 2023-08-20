@@ -9,8 +9,9 @@ namespace TaskTrackerService.Services;
 /// </summary>
 public class WorkerAssignRequest
 {
-    public WorkerAssignRequest(TaskCreationRequest model)
+    public WorkerAssignRequest(TaskCreationRequest model, Guid id)
     {
+        TaskId = id;
         Title = model.Title!;
         Description = model.Description!;
         PreviousAssignee = null;
@@ -18,10 +19,13 @@ public class WorkerAssignRequest
 
     public WorkerAssignRequest(PopugTask task)
     {
+        TaskId = task.Id!;
         Title = task.Title!;
         Description = task.Description!;
         PreviousAssignee = task.AssignedUserId!;
     }
+
+    public Guid TaskId { get; set; }
 
     public string Title { get; set; }
 

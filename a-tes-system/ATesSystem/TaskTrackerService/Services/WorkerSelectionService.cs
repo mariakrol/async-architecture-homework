@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AuthenticationService.Queue;
+using Microsoft.EntityFrameworkCore;
+using PopugKafkaClient.Producer;
 using TaskTrackerService.Data.Storage;
 
 namespace TaskTrackerService.Services;
@@ -6,12 +8,13 @@ namespace TaskTrackerService.Services;
 public class WorkerSelectionService : IWorkerSelectionService
 {
     private readonly TaskTrackerDb _context;
-
+    private readonly IMessageQueueEventProducerService _queueEventProducer;
     private readonly Random _random;
 
-    public WorkerSelectionService(TaskTrackerDb context)
+    public WorkerSelectionService(TaskTrackerDb context, IMessageQueueEventProducerService queueEventProducer)
     {
         _context = context;
+        _queueEventProducer = queueEventProducer;
         _random = new Random();
     }
 
@@ -26,10 +29,21 @@ public class WorkerSelectionService : IWorkerSelectionService
         
         Console.WriteLine($"Users count: {usersCount}, selected: {index}"); //ToDo: log
 
-        if(index == 0) {
-            return (await _context.Users.FirstAsync()).Id;
-        }
+        var newAssigneeId = index == 0
+            ? (await _context.Users.FirstAsync()).Id
+            : (await _context.Users.Skip(index).FirstAsync()).Id;
         
-        return _context.Users.Skip(index).First().Id;
+        if (request.PreviousAssignee is not null)
+        {
+            await _queueEventProducer.Produce("user-assigning-stream",
+                new UserUnassignedEvent(
+                    new AssigmentChangeEventPayload(request.TaskId, request.PreviousAssignee.Value)));
+        }
+
+        await _queueEventProducer.Produce("user-assigning-stream",
+                new UserAssignedEvent(
+                    new AssigmentChangeEventPayload(request.TaskId, newAssigneeId)));
+
+        return newAssigneeId;
     }
 }

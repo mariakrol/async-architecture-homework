@@ -15,7 +15,8 @@ public class UserEventConsumer : MessageQueueEventConsumer<UserCreatedEvent>
         : base(GetKafkaSettings(services), 
             "task-tracker-user-event-consumer",
             "group1", //ToDo: read about group naming and rename
-            "users-stream")
+            "users-stream",
+            "user-created")
     {
         Services = services;
         _deserializer = new PayloadSerializer<UserCreatedEvent>();
