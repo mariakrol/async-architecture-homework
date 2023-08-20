@@ -11,17 +11,15 @@ namespace TaskTrackerService.Controller;
 public class TaskController : ControllerBase
 {
     private readonly ITaskService _taskService;
-    private readonly HttpContext _httpContext;
 
-    public TaskController(ITaskService taskService, HttpContext httpContext)
+    public TaskController(ITaskService taskService)
     {
         _taskService = taskService;
-        _httpContext = httpContext;
     }
 
     [HttpGet("all")]
     [Produces("application/json")]
-    //[AuthorizeAsAdmin]
+    [AuthorizeAsAdmin]
     public async Task<PopugTask[]> GetTasks()
     {
         return await _taskService.GetTasks();
@@ -32,9 +30,7 @@ public class TaskController : ControllerBase
     [Authorize]
     public async Task<PopugTask[]> GetAssignedTasks()
     {
-        var account = (User)_httpContext.Items["User"]!; // ToDo: create 'session helper'
-
-        return await _taskService.GetTasks(account);
+        return await _taskService.GetAssignedTasks();
     }
 
     [HttpPost("create")]
@@ -53,7 +49,7 @@ public class TaskController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    //[AuthorizeAsAdmin]
+    [AuthorizeAsAdmin]
     public async Task ShuffleTasks()
     {
         await _taskService.ShuffleTasks();
@@ -66,6 +62,6 @@ public class TaskController : ControllerBase
     [Authorize]
     public async Task FinishTask(TaskFinalizationRequest request)
     {
-        await _taskService.ShuffleTasks();
+        await _taskService.FinishTask(request.TaskId!.Value);
     } 
 }

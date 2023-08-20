@@ -43,6 +43,7 @@ public class Startup
         services.AddScoped<IWorkerSelectionService, WorkerSelectionService>();
         services.AddScoped<ICostCalculatorService, CostCalculatorService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         services.AddHostedService<UserEventConsumer>();
 
@@ -68,6 +69,7 @@ public class Startup
         }
 
         app.UseMiddleware<ErrorHandlerMiddleware>();
+        app.UseMiddleware<JwtMiddleware>();
 
         app.UseRouting();
         app.UseHttpsRedirection();

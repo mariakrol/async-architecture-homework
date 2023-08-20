@@ -6,11 +6,11 @@ namespace TaskTrackerService.Services;
 
 public class UserService : IUserService
 {
-    private readonly TaskTrackerDb _context;
+    private readonly TaskTrackerDb _dataContext;
 
     public UserService(TaskTrackerDb context)
     {
-        _context = context;
+        _dataContext = context;
     }
 
     public async Task<Guid> SaveUser(UserCreatedEvent model)
@@ -19,14 +19,14 @@ public class UserService : IUserService
 
         var user = new User(model.Id, model.Name, model.Role);
 
-        _context.Users.Add(user);
-        await _context.SaveChangesAsync();
+        _dataContext.Users.Add(user);
+        await _dataContext.SaveChangesAsync();
 
         return user.Id;
     }
 
     public async Task<User[]> GetUsers()
     {
-        return await _context.Users.ToArrayAsync();
+        return await _dataContext.Users.ToArrayAsync();
     }
 }

@@ -7,11 +7,11 @@ public interface ITaskService
 {
     Task<PopugTask[]> GetTasks();
 
-    Task<PopugTask[]> GetTasks(User user);
+    Task<PopugTask[]> GetAssignedTasks();
 
     Task<TaskCreationResponse> Create(TaskCreationRequest model);
 
     Task ShuffleTasks();
 
-    Task Finalize(Guid taskId);
+    Task FinishTask(Guid taskId);
 }

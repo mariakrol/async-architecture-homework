@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using TaskTrackerService.CustomExceptions;
 using TaskTrackerService.Data.RequestResponseModels.Task;
 using TaskTrackerService.Data.Storage;
 using TaskStatus = TaskTrackerService.Data.Storage.TaskStatus;
@@ -10,13 +12,17 @@ public class TaskService : ITaskService
     private readonly IWorkerSelectionService _workerSelectionService;
     private readonly ICostCalculatorService _costCalculator;
     private readonly TaskTrackerDb _context;
+    private readonly IHttpContextAccessor _httpContext;
 
-    public TaskService(IWorkerSelectionService workerSelectionService, ICostCalculatorService costCalculator,
-        TaskTrackerDb context)
+    public TaskService(IWorkerSelectionService workerSelectionService,
+        ICostCalculatorService costCalculator,
+        TaskTrackerDb context,
+        IHttpContextAccessor httpContext)
     {
         _workerSelectionService = workerSelectionService;
         _costCalculator = costCalculator;
         _context = context;
+        _httpContext = httpContext;
     }
     
 
@@ -58,9 +64,11 @@ public class TaskService : ITaskService
         return await _context.Tasks.ToArrayAsync();
     }
 
-    public async Task<PopugTask[]> GetTasks(User user)
+    public async Task<PopugTask[]> GetAssignedTasks()
     {
-        return await _context.Tasks.Where(t => t.AssignedUserId == user.Id).ToArrayAsync();
+        var authorizedUserId = GetAuthorizedUserId();
+
+        return await _context.Tasks.Where(t => t.AssignedUserId == authorizedUserId).ToArrayAsync();
     }
 
     public async Task ShuffleTasks()
@@ -82,16 +90,29 @@ public class TaskService : ITaskService
         }
     }
 
-    public async Task Finalize(Guid taskId)
+    public async Task FinishTask(Guid taskId)
     {
         var task = await _context.Tasks.FirstAsync(t => t.Id == taskId);
-        task.ChangeStatus(TaskStatus.Done);
+        var authorizedUserId = GetAuthorizedUserId();
 
+        if(task.AssignedUserId != authorizedUserId)
+        {
+            throw new TaskTrackerServiceException($"Task {taskId} is not assigned on authorized user");
+        }
+
+        task.ChangeStatus(TaskStatus.Done);
         await _context.SaveChangesAsync();
 
-        //ToDo: produce events
+        // ToDo: produce events
         // Business: Task finished
         // CUD: Task updated
         // Business: fee assigned
+    }
+
+
+    private Guid? GetAuthorizedUserId() {
+        var account = (User)_httpContext.HttpContext!.Items["User"]!; // ToDo: create 'session helper'?
+
+        return account?.Id;
     }
 }
