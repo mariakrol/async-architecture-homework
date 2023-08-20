@@ -1,6 +1,5 @@
 ﻿using Confluent.Kafka;
 using PopugKafkaClient.Data.Configuration;
-using PopugKafkaClient.Utilities;
 using Microsoft.Extensions.Options;
 
 namespace PopugKafkaClient.Producer;
