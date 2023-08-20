@@ -5,6 +5,8 @@ namespace AuthenticationService.Services;
 
 public interface IUserService
 {
+    Task<User[]> GetUsers();
+    
     Task<UserCreationResponse> CreateUser(UserCreationRequest model);
 
     internal Task<User> CreateUser(string name, string password, Role role);

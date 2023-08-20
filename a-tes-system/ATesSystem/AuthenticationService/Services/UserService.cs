@@ -64,4 +64,9 @@ internal class UserService : IUserService
 
         throw new ArgumentException($"User with the name '{name}' is found but password is unexpected");
     }
+
+    public async Task<User[]> GetUsers()
+    {
+        return await _context.Users.ToArrayAsync();
+    }
 }

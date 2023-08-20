@@ -1,5 +1,6 @@
 ﻿using AuthenticationService.Attributes;
 using AuthenticationService.Data.RequestResponseModels.User;
+using AuthenticationService.Data.Storage;
 using AuthenticationService.Queue;
 using AuthenticationService.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -33,5 +34,18 @@ public class UsersController : Controller
         await _queueEventProducer.Produce("users-stream", userCreatedEvent);
 
         return TypedResults.Created($"/users/{response.Id}", response);
+    }
+
+    /// <summary>
+    /// The request is created just to simplify test and debug process.
+    /// Will be removed in the final realization
+    /// </summary>
+    /// <returns>set of existing users</returns>
+    [HttpGet]
+    [Produces("application/json")]
+    [AllowAnonymous]
+    public async Task<User[]> GetUsers()
+    {
+        return await _userService.GetUsers();
     }
 }

@@ -39,6 +39,7 @@ public class UserEventConsumer : MessageQueueEventConsumer<UserCreatedEvent>
         using var scope = Services.CreateScope();
         var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
 
-        await userService.SaveUser(payload);
+        await userService.SaveUser(payload); // ToDo: in transaction
+
     }
 }
