@@ -4,6 +4,8 @@ using AuthenticationService.Utilities;
 using Microsoft.Extensions.Options;
 using AuthenticationService.Data.RequestResponseModels.User;
 using Microsoft.EntityFrameworkCore;
+using AuthenticationService.Queue;
+using PopugKafkaClient.Producer;
 
 namespace AuthenticationService.Services;
 
@@ -11,20 +13,27 @@ internal class UserService : IUserService
 {
     private readonly UserDb _context;
     private readonly AppSettings _appSettings;
+    private readonly IMessageQueueEventProducerService _queueEventProducer;
 
     public UserService(
         UserDb context,
-        IOptions<AppSettings> appSettings)
+        IOptions<AppSettings> appSettings,
+        IMessageQueueEventProducerService queueEventProducer)
     {
         _context = context;
         _appSettings = appSettings.Value;
+        _queueEventProducer = queueEventProducer;
     }
 
     public async Task<UserCreationResponse> CreateUser(UserCreationRequest model)
     {
         var user = await CreateUser(model.UserName!, model.Password!, model.Role!.Value);
+        var createdUserResponse = new UserCreationResponse(user);
 
-        return new UserCreationResponse(user);
+        var userCreatedEvent = new UserCreatedEvent(createdUserResponse);
+        await _queueEventProducer.Produce("users-stream", userCreatedEvent);
+
+        return createdUserResponse;
     }
 
     public async Task<User> CreateUser(string name, string password, Role role)
