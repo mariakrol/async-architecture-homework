@@ -10,5 +10,6 @@ public class UserAssignedEvent : MessageQueueEventBase<AssigmentChangeEventPaylo
     }
 
     public override string EventName => "user-assigned";
+    
     public override AssigmentChangeEventPayload Payload { get; }
 }

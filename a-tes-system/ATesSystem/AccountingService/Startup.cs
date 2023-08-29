@@ -1,15 +1,15 @@
 ﻿using System.Text.Json.Serialization;
+using AccountingService.Data.Configuration;
+using AccountingService.Middleware;
+using AccountingService.Services;
+using AccountingService.Utilities.Jwt;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PopugKafkaClient.Data.Configuration;
-using TaskTrackerService.Data.Configuration;
-using TaskTrackerService.Data.Storage;
-using TaskTrackerService.Middleware;
+using PopugKafkaClient.Producer;
 using TaskTrackerService.Queue;
-using TaskTrackerService.Services;
-using TaskTrackerService.Utilities.Jwt;
 
-namespace TaskTrackerService;
+namespace AccountingService;
 
 public class Startup
 {
@@ -22,7 +22,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<TaskTrackerDb>(opt => opt.UseInMemoryDatabase("TaskTracker"));
+        services.AddDbContext<AccountingDb>(opt => opt.UseInMemoryDatabase("Accounting"));
 
         services.ConfigureHttpJsonOptions(options =>
         {
@@ -39,13 +39,11 @@ public class Startup
         services.Configure<PopugKafkaSettings>(Configuration.GetSection("PopugKafkaSettings"));
 
         services.AddScoped<IJwtUtils, JwtUtils>();
-        services.AddScoped<ITaskService, TaskService>();
-        services.AddScoped<IWorkerSelectionService, WorkerSelectionService>();
-        services.AddScoped<ICostCalculatorService, CostCalculatorService>();
+        services.AddScoped<IAccountService, AccountService>();
         services.AddScoped<IUserService, UserService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-        services.AddHostedService<UserEventConsumer>();
+        services.AddHostedService<UserCreationEventConsumer>();
 
         services.AddSwaggerGen(config =>
         {

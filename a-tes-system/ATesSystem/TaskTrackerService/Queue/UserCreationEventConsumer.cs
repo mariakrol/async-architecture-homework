@@ -7,11 +7,11 @@ using TaskTrackerService.Services;
 
 namespace TaskTrackerService.Queue;
 
-public class UserEventConsumer : MessageQueueEventConsumer<UserCreatedEvent>
+public class UserCreationEventConsumer : MessageQueueEventConsumer<UserCreatedEvent>
 {
     private IDeserializer<UserCreatedEvent> _deserializer;
 
-    public UserEventConsumer(IServiceProvider services)
+    public UserCreationEventConsumer(IServiceProvider services)
         : base(GetKafkaSettings(services), 
             "task-tracker-user-event-consumer",
             "group1", //ToDo: read about group naming and rename

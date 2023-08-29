@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PopugKafkaClient.Data.Configuration;
+using PopugKafkaClient.Producer;
 using TaskTrackerService.Data.Configuration;
 using TaskTrackerService.Data.Storage;
 using TaskTrackerService.Middleware;
@@ -45,7 +46,9 @@ public class Startup
         services.AddScoped<IUserService, UserService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-        services.AddHostedService<UserEventConsumer>();
+        services.AddScoped<IMessageQueueEventProducerService,  TaskTrackerServiceMessageProducer>();
+
+        services.AddHostedService<UserCreationEventConsumer>();
 
         services.AddSwaggerGen(config =>
         {

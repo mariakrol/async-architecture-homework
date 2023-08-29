@@ -10,5 +10,6 @@ public class CostCalculatedEvent : MessageQueueEventBase<CostCalculatedEventPayl
     }
 
     public override string EventName => "cost-calculated";
+    
     public override CostCalculatedEventPayload Payload { get; }
 }

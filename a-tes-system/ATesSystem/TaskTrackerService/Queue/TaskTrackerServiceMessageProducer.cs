@@ -2,7 +2,7 @@
 using PopugKafkaClient.Data.Configuration;
 using PopugKafkaClient.Producer;
 
-namespace AuthenticationService.Queue;
+namespace TaskTrackerService.Queue;
 
 public class TaskTrackerServiceMessageProducer : MessageQueueEventProducerService
 {

@@ -19,7 +19,7 @@ public class TaskController : ControllerBase
 
     [HttpGet("all")]
     [Produces("application/json")]
-    [AuthorizeAsAdmin]
+    //[AuthorizeAsAdmin]
     public async Task<PopugTask[]> GetTasks()
     {
         return await _taskService.GetTasks();
@@ -27,7 +27,7 @@ public class TaskController : ControllerBase
 
     [HttpGet("assigned")]
     [Produces("application/json")]
-    [Authorize]
+    //[Authorize]
     public async Task<PopugTask[]> GetAssignedTasks()
     {
         return await _taskService.GetAssignedTasks();
@@ -37,7 +37,7 @@ public class TaskController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(TaskCreationResponse))]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [Authorize]
+    //[Authorize]
     public async Task<IResult> CreateTask(TaskCreationRequest model)
     {
         var response = await _taskService.Create(model);
@@ -49,7 +49,7 @@ public class TaskController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [AuthorizeAsAdmin]
+    //[AuthorizeAsAdmin]
     public async Task ShuffleTasks()
     {
         await _taskService.ShuffleTasks();
@@ -59,7 +59,7 @@ public class TaskController : ControllerBase
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [Authorize]
+    //[Authorize]
     public async Task FinishTask(TaskFinalizationRequest request)
     {
         await _taskService.FinishTask(request.TaskId!.Value);
