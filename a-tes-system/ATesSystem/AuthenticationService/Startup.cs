@@ -23,7 +23,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<UserDb>(opt => opt.UseInMemoryDatabase("Users"));
+        services.AddDbContext<UserDb>();
 
         services.ConfigureHttpJsonOptions(options =>
         {

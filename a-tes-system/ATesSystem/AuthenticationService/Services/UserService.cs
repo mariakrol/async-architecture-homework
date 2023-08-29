@@ -48,7 +48,7 @@ internal class UserService : IUserService
 
         var user = new User(id: Guid.NewGuid(), name: name, encryptedPassword: Encryptor.Encrypt(password, secret), role);
         
-        _context.Users.Add(user);
+        await _context.Users.AddAsync (user);
         await _context.SaveChangesAsync();
 
         return user;
@@ -56,12 +56,8 @@ internal class UserService : IUserService
 
     public async Task<User> RetrieveUser(string name, string password)
     {
-        var user = await _context.Users.SingleOrDefaultAsync(user => user.Name.Equals(name));
-
-        if (user is null)
-        {
-            throw new ArgumentException($"User with the name '{name}' is not exists");
-        }
+        var user = await _context.Users.SingleOrDefaultAsync(user => user.Name.Equals(name)) 
+            ?? throw new ArgumentException($"User with the name '{name}' is not exists");
         var secret = _appSettings.PasswordEncryptionSecret;
 
         var encryptedPassword = Encryptor.Encrypt(password, secret);
