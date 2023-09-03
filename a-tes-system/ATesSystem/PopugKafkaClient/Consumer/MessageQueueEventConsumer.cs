@@ -15,6 +15,7 @@ public abstract class MessageQueueEventConsumer<TPayload> : BackgroundService
     {
         var config = new ConsumerConfig()
         {
+            AllowAutoCreateTopics = true,
             BootstrapServers = settings.Value.ServerAddress,
             AutoOffsetReset = AutoOffsetReset.Earliest,
             ClientId = clientId,
@@ -37,9 +38,18 @@ public abstract class MessageQueueEventConsumer<TPayload> : BackgroundService
         var i = 0;
         while (!stoppingToken.IsCancellationRequested)
         {
-            var consumeResult = _consumer.Consume(stoppingToken);
+            ConsumeResult<string, string>? consumeResult;
+            try
+            {
+                consumeResult = _consumer.Consume(stoppingToken);
+            }
+            catch(ConsumeException e) when (e.Message.Contains("Unknown topic or partition"))
+            {
+                //Log no topic found
+                consumeResult = null;
+            }
 
-            if (consumeResult.Message.Key.Equals(_eventName))
+            if (consumeResult is not null && consumeResult.Message.Key.Equals(_eventName))
             {
                 if (consumeResult.Message.Value is not null)
                 {

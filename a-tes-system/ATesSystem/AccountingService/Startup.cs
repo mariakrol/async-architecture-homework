@@ -1,6 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using AccountingService.Data.Configuration;
 using AccountingService.Middleware;
+using AccountingService.Queue;
 using AccountingService.Services;
 using AccountingService.Utilities.Jwt;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<AccountingDb>(opt => opt.UseInMemoryDatabase("Accounting"));
+        services.AddDbContext<AccountingDb>();
 
         services.ConfigureHttpJsonOptions(options =>
         {
@@ -44,6 +45,8 @@ public class Startup
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
         services.AddHostedService<UserCreationEventConsumer>();
+        services.AddHostedService<UserAssigmentEventConsumer>();
+        services.AddHostedService<UserUnassigmentEventConsumer>();
 
         services.AddSwaggerGen(config =>
         {

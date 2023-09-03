@@ -20,6 +20,13 @@ public class AccountService : IAccountService
         return newAccount;
     }
 
+    public async Task<Account> GetAccount(Guid userId)
+    {
+        var account = await _dataContext.Accounts.Where(a => a.UserId == userId).FirstAsync();
+        
+        return account;
+    }
+
     public async Task SetAssigmentFee(Guid userId, int fee)
     {
         await ChangeBalance(userId, fee);

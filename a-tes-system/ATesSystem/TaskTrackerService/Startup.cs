@@ -23,7 +23,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<TaskTrackerDb>(opt => opt.UseInMemoryDatabase("TaskTracker"));
+        services.AddDbContext<TaskTrackerDb>();
 
         services.ConfigureHttpJsonOptions(options =>
         {

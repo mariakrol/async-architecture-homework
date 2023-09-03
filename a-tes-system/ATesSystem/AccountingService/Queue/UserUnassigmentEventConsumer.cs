@@ -1,4 +1,4 @@
-﻿using Confluent.Kafka;
+using Confluent.Kafka;
 using Microsoft.Extensions.Options;
 using PopugKafkaClient.Consumer;
 using PopugKafkaClient.Data.Configuration;
@@ -6,19 +6,19 @@ using PopugKafkaClient.Utilities;
 
 namespace AccountingService.Queue;
 
-public class UserAssigmentEventConsumer : MessageQueueEventConsumer<UserAssignedEvent>
+public class UserUnassigmentEventConsumer : MessageQueueEventConsumer<AssigmentChangeEvent>
 {
-    private IDeserializer<UserAssignedEvent> _deserializer;
+    private IDeserializer<AssigmentChangeEvent> _deserializer;
 
-    public UserAssigmentEventConsumer(IServiceProvider services)
+    public UserUnassigmentEventConsumer(IServiceProvider services)
         : base(GetKafkaSettings(services),
             "accounting-user-event-consumer",
             "group2", //ToDo: read about group naming and rename
             "user-assigning-stream",
-            "user-assigned")
+            "user-unassigned")
     {
         Services = services;
-        _deserializer = new PayloadSerializer<UserAssignedEvent>();
+        _deserializer = new PayloadSerializer<AssigmentChangeEvent>();
     }
 
     public IServiceProvider Services { get; }
@@ -29,16 +29,16 @@ public class UserAssigmentEventConsumer : MessageQueueEventConsumer<UserAssigned
         return scope.ServiceProvider.GetService<IOptions<PopugKafkaSettings>>()!;
     }
 
-    protected override UserAssignedEvent Deserialize(string json)
+    protected override AssigmentChangeEvent Deserialize(string json)
     {
         return _deserializer.Deserialize(json.ToAsciiByteArray(), isNull: false, new SerializationContext());
     }
 
-    protected override async Task HandleMessage(UserAssignedEvent payload)
+    protected override async Task HandleMessage(AssigmentChangeEvent payload)
     {
         using var scope = Services.CreateScope();
 
         var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
-        await userService.AssignUser(payload.TaskId, payload.UserId);
+        await userService.UnassignUser(payload.TaskId);
     }
 }

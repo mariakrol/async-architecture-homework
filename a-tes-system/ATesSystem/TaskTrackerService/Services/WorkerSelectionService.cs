@@ -37,12 +37,12 @@ public class WorkerSelectionService : IWorkerSelectionService
         {
             await _queueEventProducer.Produce("user-assigning-stream",
                 new UserUnassignedEvent(
-                    new AssigmentChangeEventPayload(request.TaskId, request.PreviousAssignee.Value)));
+                    new AssigmentChangeEventPayload(request.TaskId)));
         }
 
         await _queueEventProducer.Produce("user-assigning-stream",
                 new UserAssignedEvent(
-                    new AssigmentChangeEventPayload(request.TaskId, newAssigneeId)));
+                    new UserAssignedEventPayload(request.TaskId, newAssigneeId)));
 
         return newAssigneeId;
     }
