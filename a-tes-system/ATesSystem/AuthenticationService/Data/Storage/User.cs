@@ -1,5 +1,8 @@
-﻿namespace AuthenticationService.Data.Storage;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
+namespace AuthenticationService.Data.Storage;
+
+[Table("users")]
 public class User
 {
     public User(Guid id, string name, string encryptedPassword, Role role)
@@ -10,11 +13,16 @@ public class User
         Role = role;
     }
 
+    [System.ComponentModel.DataAnnotations.Key]
+    [Column("id")]
     public Guid Id { get; set; }
 
+    [Column("name")]
     public string Name { get; set; }
 
+    [Column("encrypted_password")]
     public string EncryptedPassword { get; set; }
 
+    [Column("role")]
     public Role Role { get; set; }
 }

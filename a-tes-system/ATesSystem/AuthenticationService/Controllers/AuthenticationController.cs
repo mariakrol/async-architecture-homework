@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Authentication;
 using AuthenticationService.Attributes;
+
 using IAuthenticationService = AuthenticationService.Services.IAuthenticationService;
 
 namespace AuthenticationService.Controllers;
@@ -31,7 +32,7 @@ public class AuthenticationController : ControllerBase
         catch (AuthenticationException ex)
         {
             // Only message is sent to the caller, because System.Text.Json
-            // does not support serialization of exceptions https://github.com/dotnet/runtime/issues/43026 
+            // does not support serialization of exceptions https://github.com/dotnet/runtime/issues/43026
             return Unauthorized(ex.Message);
         }
     }

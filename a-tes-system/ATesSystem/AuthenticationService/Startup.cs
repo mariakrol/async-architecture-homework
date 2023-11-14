@@ -23,7 +23,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<UserDb>(opt => opt.UseInMemoryDatabase("Users"));
+        services.AddDbContext<UserDb>();
 
         services.ConfigureHttpJsonOptions(options =>
         {
@@ -74,15 +74,5 @@ public class Startup
 
         app.UseSwagger(c => { c.SerializeAsV2 = true; });
         app.UseSwaggerUI();
-
-        var serviceScope = app.ApplicationServices.CreateScope();
-        var userService = serviceScope.ServiceProvider.GetRequiredService<IUserService>();
-        AddTestData(userService);
-    }
-
-    private static void AddTestData(IUserService userService)
-    {
-        var user1 = userService.CreateUser(name: "User", "User", Role.Worker);
-        var user2 = userService.CreateUser(name: "Root", "Root", Role.Admin);
     }
 }

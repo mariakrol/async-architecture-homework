@@ -1,6 +1,5 @@
 ﻿using Confluent.Kafka;
 using PopugKafkaClient.Data.Configuration;
-using PopugKafkaClient.Utilities;
 using Microsoft.Extensions.Options;
 
 namespace PopugKafkaClient.Producer;
@@ -21,19 +20,18 @@ public class MessageQueueEventProducerService : IMessageQueueEventProducerServic
 
     public Task Produce<TPayload>(string topic, MessageQueueEventBase<TPayload> @event)
     {
-        IProducer<string, TPayload> producer = null;
+        IProducer<string, string> producer = null;
 
         try
         {
-            producer = new ProducerBuilder<string, TPayload>(_config)
-                .SetValueSerializer(new PayloadSerializer<TPayload>())
+            producer = new ProducerBuilder<string, string>(_config)
                 .Build();
 
             producer.Produce(topic,
-                new Message<string, TPayload> { Key = @event.EventName, Value = @event.Payload },
+                new Message<string, string> { Key = @event.EventName, Value = @event.SerializePayload() },
                 deliveryReport =>
                 {
-                    Console.WriteLine(deliveryReport.Error.Code != ErrorCode.NoError
+                    Console.WriteLine(deliveryReport.Error.Code != ErrorCode.NoError // ToDo: add logger here
                         ? $"Failed to deliver message: {deliveryReport.Error.Reason}"
                         : $"Produced message to: {deliveryReport.TopicPartitionOffset}");
                 });
@@ -47,10 +45,10 @@ public class MessageQueueEventProducerService : IMessageQueueEventProducerServic
         }
         finally
         {
-            var queueSize = producer?.Flush(TimeSpan.FromSeconds(5));
+            var queueSize = producer?.Flush(TimeSpan.FromSeconds(10));
             if (queueSize > 0)
             {
-                Console.WriteLine("WARNING: Producer event queue has " + queueSize + " pending events on exit.");
+                Console.WriteLine("WARNING: Producer event queue has " + queueSize + " pending events on exit."); //ToDo: add logging here
             }
 
             producer?.Dispose();

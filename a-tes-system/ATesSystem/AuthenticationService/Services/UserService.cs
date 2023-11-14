@@ -4,6 +4,8 @@ using AuthenticationService.Utilities;
 using Microsoft.Extensions.Options;
 using AuthenticationService.Data.RequestResponseModels.User;
 using Microsoft.EntityFrameworkCore;
+using AuthenticationService.Queue;
+using PopugKafkaClient.Producer;
 
 namespace AuthenticationService.Services;
 
@@ -11,20 +13,27 @@ internal class UserService : IUserService
 {
     private readonly UserDb _context;
     private readonly AppSettings _appSettings;
+    private readonly IMessageQueueEventProducerService _queueEventProducer;
 
     public UserService(
         UserDb context,
-        IOptions<AppSettings> appSettings)
+        IOptions<AppSettings> appSettings,
+        IMessageQueueEventProducerService queueEventProducer)
     {
         _context = context;
         _appSettings = appSettings.Value;
+        _queueEventProducer = queueEventProducer;
     }
 
     public async Task<UserCreationResponse> CreateUser(UserCreationRequest model)
     {
         var user = await CreateUser(model.UserName!, model.Password!, model.Role!.Value);
+        var createdUserResponse = new UserCreationResponse(user);
 
-        return new UserCreationResponse(user);
+        var userCreatedEvent = new UserCreatedEvent(createdUserResponse);
+        await _queueEventProducer.Produce("users-stream", userCreatedEvent);
+
+        return createdUserResponse;
     }
 
     public async Task<User> CreateUser(string name, string password, Role role)
@@ -39,7 +48,7 @@ internal class UserService : IUserService
 
         var user = new User(id: Guid.NewGuid(), name: name, encryptedPassword: Encryptor.Encrypt(password, secret), role);
         
-        _context.Users.Add(user);
+        await _context.Users.AddAsync (user);
         await _context.SaveChangesAsync();
 
         return user;
@@ -47,12 +56,8 @@ internal class UserService : IUserService
 
     public async Task<User> RetrieveUser(string name, string password)
     {
-        var user = await _context.Users.SingleOrDefaultAsync(user => user.Name.Equals(name));
-
-        if (user is null)
-        {
-            throw new ArgumentException($"User with the name '{name}' is not exists");
-        }
+        var user = await _context.Users.SingleOrDefaultAsync(user => user.Name.Equals(name)) 
+            ?? throw new ArgumentException($"User with the name '{name}' is not exists");
         var secret = _appSettings.PasswordEncryptionSecret;
 
         var encryptedPassword = Encryptor.Encrypt(password, secret);
@@ -63,5 +68,10 @@ internal class UserService : IUserService
         }
 
         throw new ArgumentException($"User with the name '{name}' is found but password is unexpected");
+    }
+
+    public async Task<User[]> GetUsers()
+    {
+        return await _context.Users.ToArrayAsync();
     }
 }

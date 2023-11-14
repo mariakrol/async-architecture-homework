@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using PopugKafkaClient.Data.Configuration;
+using PopugKafkaClient.Producer;
 using TaskTrackerService.Data.Configuration;
 using TaskTrackerService.Data.Storage;
 using TaskTrackerService.Middleware;
@@ -22,7 +23,7 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddDbContext<TaskTrackerDb>(opt => opt.UseInMemoryDatabase("TaskTracker"));
+        services.AddDbContext<TaskTrackerDb>();
 
         services.ConfigureHttpJsonOptions(options =>
         {
@@ -43,14 +44,17 @@ public class Startup
         services.AddScoped<IWorkerSelectionService, WorkerSelectionService>();
         services.AddScoped<ICostCalculatorService, CostCalculatorService>();
         services.AddScoped<IUserService, UserService>();
+        services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
-        services.AddSingleton<UserEventConsumer>();
+        services.AddScoped<IMessageQueueEventProducerService,  TaskTrackerServiceMessageProducer>();
+
+        services.AddHostedService<UserCreationEventConsumer>();
 
         services.AddSwaggerGen(config =>
         {
             config.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "Authentication API",
+                Title = "Task Tracker API",
                 Version = "v1"
             });
         });
@@ -68,6 +72,7 @@ public class Startup
         }
 
         app.UseMiddleware<ErrorHandlerMiddleware>();
+        app.UseMiddleware<JwtMiddleware>();
 
         app.UseRouting();
         app.UseHttpsRedirection();
